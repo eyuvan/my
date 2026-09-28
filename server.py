@@ -9,7 +9,7 @@ from telebot import TeleBot, types
 # ⚙️ CONFIGURATION & INITIALIZATION
 # =====================================================================
 # Replace this with the authentic secret token you received from @BotFather
-BOT_TOKEN = "8888596063:AAGxm_7sh290Zemwop9wHK7NtK32SbjEm24"  
+BOT_TOKEN = "8279343753:AAE65TGdX36K6ktPKNRaR1U4y_eanEGqYNk"  
 
 # Replace this with your secure HTTPS static web hosting URL where your index.html is located
 WEBAPP_URL = "https://eyuvan.github.io/my/"  
