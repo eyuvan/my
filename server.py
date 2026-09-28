@@ -12,7 +12,7 @@ from telebot import TeleBot, types
 BOT_TOKEN = "8888596063:AAGxm_7sh290Zemwop9wHK7NtK32SbjEm24"  
 
 # Replace this with your secure HTTPS static web hosting URL where your index.html is located
-WEBAPP_URL = "https://yourdomain.com"  
+WEBAPP_URL = "https://eyuvan.github.io/my/"  
 
 bot = TeleBot(BOT_TOKEN)
 app = FastAPI(title="Telegram Bingo Game Backend Engine")
