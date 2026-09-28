@@ -4,131 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edil Bingo</title>
-    <!-- የቴሌግራም ሚኒ አፕ ስክሪፕት -->
+    <!-- Telegram Mini App Webhook Injector -->
     <script src="https://telegram.org"></script>
-    <style>
-        :root {
-            --bg-color: #141414;
-            --text-color: #ffffff;
-            --primary-color: #0088cc;
-            --accent-color: #f39c12;
-            --card-selected: #2ecc71;
-            --nav-bg: #1e272e;
-        }
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0; padding: 0; box-sizing: border-box;
-            padding-bottom: 90px;
-        }
-        /* Top Status Bar */
-        .top-bar {
-            background-color: #1e272e;
-            padding: 12px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            font-size: 13px;
-            font-weight: bold;
-            border-bottom: 2px solid var(--primary-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .timer-badge {
-            background-color: #e74c3c;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        .screen { padding: 15px; display: none; }
-        .screen.active { display: block; }
-        
-        /* 🛑 1-600 ካርቴላዎች መታያ ግሪድ */
-        .card-selector-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: scroll;
-            background: #1e1e1e;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #333;
-        }
-        .card-item {
-            background-color: #2c3e50;
-            padding: 15px 0;
-            text-align: center;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            user-select: none;
-        }
-        .card-item.selected {
-            background-color: var(--card-selected) !important;
-            color: #000 !important;
-        }
-        
-        /* Live Bingo Board Layout */
-        .bingo-caller-display {
-            background: #000;
-            border: 2px solid var(--accent-color);
-            border-radius: 8px;
-            height: 70px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-            color: #00ff00;
-            font-family: monospace;
-            margin-bottom: 15px;
-        }
-        .bingo-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
-            background: #252525;
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-        .bingo-header { background: var(--primary-color); text-align: center; padding: 6px 0; font-weight: bold; }
-        .bingo-cell { background: #333; text-align: center; padding: 10px 0; font-weight: bold; font-size: 14px; }
-        .bingo-cell.hit { background: var(--accent-color) !important; color: white; }
-
-        /* Navbar */
-        .navbar {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background-color: var(--nav-bg); display: flex;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-        .nav-item {
-            padding: 18px 0; color: #8a8a8a; flex-grow: 1;
-            text-align: center; cursor: pointer; font-weight: bold; font-size: 14px;
-        }
-        .nav-item.active { color: #fff; background-color: var(--primary-color); }
-        .card-view { background: #1e272e; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
-		.action-btn {
-            background-color: var(--card-selected); color: black; border: none;
-            padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer;
-            font-size: 16px; margin-top: 10px;
-        }
-    </style>
+    <!-- External Layout Component Stylesheets -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- 3ኛ. የላይኛው ቶፕ ባር መረጃ -->
+    <!-- Top Navigation Information Display -->
     <div class="top-bar">
         <div>Play Stake: <span id="topStake">10</span> ETB</div>
-        <div>Main Wallet: <span id="topMainWallet">500</span></div>
-        <div>Play Wallet: <span id="topPlayWallet">150</span></div>
+        <div>Main Wallet: <span id="topMainWallet">0</span></div>
+        <div>Play Wallet: <span id="topPlayWallet">10</span></div>
         <div class="timer-badge" id="countdownBox">T- <span id="timer">49</span>s</div>
     </div>
 
-    <!-- 1ኛ. የካርቴላ መምረጫ ስክሪን -->
+    <!-- Screen 1: Interactive 1-600 Card Allocation Panel -->
     <div id="screen-game" class="screen active">
         <h3>ካርቴላ ይምረጡ (ከ 1 - 600)</h3>
         <div class="card-selector-grid" id="cardSelectorGrid"></div>
@@ -136,7 +27,7 @@
         <button class="action-btn" id="lockCardsBtn" onclick="confirmAndLockCards()">ምርጫን አጽድቅ (Lock Stake)</button>
     </div>
 
-    <!-- 4ኛ እና 5ኛ. የቀጥታ ቢንጎ ጨዋታ ስክሪን -->
+    <!-- Screen 2: Real-time Live Match Arena -->
     <div id="screen-bingo-play" class="screen">
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <h3>LIVE BINGO</h3>
@@ -146,39 +37,42 @@
         <div id="myBingoBoards"></div>
     </div>
 
-    <!-- 2ኛ. ዋሌት ስክሪን -->
+    <!-- Screen 3: User Accounting Ledger Panel -->
     <div id="screen-wallet" class="screen">
         <h2>የእኔ ሂሳብ (Wallet)</h2>
-        <div class="card-view"><h3>Main Wallet</h3><p style="font-size: 24px; color:#2ecc71;" id="wMain">500.00 ETB</p></div>
-        <div class="card-view"><h3>Play Wallet</h3><p style="font-size: 24px; color:#0088cc;" id="wPlay">150.00 ETB</p></div>
+        <div class="card-view"><h3>Main Wallet</h3><p style="font-size: 24px; color:#2ecc71;" id="wMain">0.00 ETB</p></div>
+        <div class="card-view"><h3>Play Wallet</h3><p style="font-size: 24px; color:#0088cc;" id="wPlay">10.00 ETB</p></div>
     </div>
 
-    <!-- 2ኛ. የጨዋታ ታሪክ ስክሪን -->
+    <!-- Screen 4: Transaction & Match History Index -->
     <div id="screen-history" class="screen">
         <h2>የጨዋታ ታሪክ (History)</h2>
-        <div class="card-view"><p>ጌም #0001 - የተገዛ ካርቴላ (-30 ETB)</p><small style="color: #aaa;">ያለፉ ጨዋታዎች ዝርዝር</small></div>
+        <div class="card-view">
+            <p>ጌም #0001 - የተገዛ ካርቴላ (-10 ETB)</p>
+            <small style="color: #aaa;">ያለፉ ጨዋታዎች ዝርዝር</small>
+        </div>
     </div>
 
-    <!-- 2ኛ. ፕሮፋይል ስክሪን -->
+    
     <div id="screen-profile" class="screen">
         <h2>የተጫዋች መገለጫ (Profile)</h2>
         <div class="card-view">
             <p><strong>Telegram ID:</strong> <span id="profTgId">Loading...</span></p>
             <p><strong>Telephone:</strong> <span id="profPhone">+251928361886</span></p>
-            <p><strong>Main Wallet:</strong> <span id="profMain">500 ETB</span></p>
-            <p><strong>Play Wallet:</strong> <span id="profPlay">150 ETB</span></p>
+            <p><strong>Main Wallet:</strong> <span id="profMain">0 ETB</span></p>
+            <p><strong>Play Wallet:</strong> <span id="profPlay">10 ETB</span></p>
         </div>
     </div>
 
-    <!-- 2ኛ. የታችኛው ኔቪጌሽን ባር -->
+    <!-- Fixed App Navigation Bar Structure -->
     <div class="navbar">
-        <div class="nav-item active" onclick="switchTab('game')">Game</div>
-        <div class="nav-item" onclick="switchTab('wallet')">Wallet</div>
-        <div class="nav-item" onclick="switchTab('history')">History</div>
-        <div class="nav-item" onclick="switchTab('profile')">Profile</div>
+        <div class="nav-item active" onclick="switchTab(event, 'game')">Game</div>
+        <div class="nav-item" onclick="switchTab(event, 'wallet')">Wallet</div>
+        <div class="nav-item" onclick="switchTab(event, 'history')">History</div>
+        <div class="nav-item" onclick="switchTab(event, 'profile')">Profile</div>
     </div>
 
-    <!-- 🛑 የውጭ ጃቫስክሪፕት ፋይል ማገናኛ (ሙሉ በሙሉ ተዘግቷል) -->
+    <!-- Core Runtime Execution Script Engine Attachment -->
     <script src="app.js"></script>
 </body>
 </html>

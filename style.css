@@ -1,0 +1,172 @@
+:root {
+    --bg-color: #141414;
+    --text-color: #ffffff;
+    --primary-color: #0088cc;
+    --accent-color: #f39c12;
+    --card-selected: #2ecc71;
+    --nav-bg: #1e272e;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    padding-bottom: 90px;
+}
+
+/* Common Header Toolbar Layout */
+.top-bar {
+    background-color: #1e272e;
+    padding: 12px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 13px;
+    font-weight: bold;
+    border-bottom: 2px solid var(--primary-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.timer-badge {
+    background-color: #e74c3c;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Individual Content View Canvas Masks */
+.screen {
+    padding: 15px;
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Card Selection List Architecture with Extended Box Height Settings */
+.card-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-height: 380px;
+    overflow-y: scroll;
+    background: #1e1e1e;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.card-item {
+    background-color: #2c3e50;
+    padding: 18px 0; /* Set taller card box height definitions */
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    user-select: none;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.card-item.selected {
+    background-color: var(--card-selected) !important;
+    color: #000 !important;
+}
+
+/* Live Random Caller Target Display Screen */
+.bingo-caller-display {
+    background: #000;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    color: #00ff00;
+    font-family: monospace;
+    margin-bottom: 15px;
+}
+
+/* 5x5 Matrix Layout Styling */
+.bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    background: #252525;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.bingo-header {
+    background: var(--primary-color);
+    text-align: center;
+    padding: 6px 0;
+    font-weight: bold;
+}
+
+.bingo-cell {
+    background: #333;
+    text-align: center;
+    padding: 12px 0;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.bingo-cell.hit {
+    background: var(--accent-color) !important;
+    color: white;
+}
+
+/* Persistent Bottom Tab-Bar Controls */
+.navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--nav-bg);
+    display: flex;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.nav-item {
+    padding: 18px 0;
+    color: #8a8a8a;
+    flex-grow: 1;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.nav-item.active {
+    color: #fff;
+    background-color: var(--primary-color);
+}
+
+.card-view {
+    background: #1e272e;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.action-btn {
+    background-color: var(--card-selected);
+    color: black;
+    border: none;
+    padding: 15px;
+    width: 100%;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
