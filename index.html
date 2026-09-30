@@ -3,76 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edil Bingo</title>
-    <!-- Telegram Mini App Webhook Injector -->
-    <script src="app.js></script>
-    <!-- External Layout Component Stylesheets -->
-    <link rel="stylesheet" href="style.css">
+    <title>Telegram Bingo Game</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-    <!-- Top Navigation Information Display -->
-    <div class="top-bar">
-        <div>Play Stake: <span id="topStake">10</span> ETB</div>
-        <div>Main Wallet: <span id="topMainWallet">0</span></div>
-        <div>Play Wallet: <span id="topPlayWallet">10</span></div>
-        <div class="timer-badge" id="countdownBox">T- <span id="timer">49</span>s</div>
+    <!-- TOP STATS BAR (Visible on Screen 1) -->
+    <div id="top-bar" class="top-bar">
+        <div class="stat-box"><span>Stake:</span> <strong id="top-stake">10</strong></div>
+        <div class="stat-box"><span>Main:</span> <strong id="top-main-wallet">100</strong></div>
+        <div class="stat-box"><span>Play:</span> <strong id="top-play-wallet">10</strong></div>
+        <div class="stat-box timer-box">⏳ <strong id="countdown-timer">49</strong>s</div>
     </div>
 
-    <!-- Screen 1: Interactive 1-600 Card Allocation Panel -->
-    <div id="screen-game" class="screen active">
-        <h3>ካርቴላ ይምረጡ (ከ 1 - 600)</h3>
-        <div class="card-selector-grid" id="cardSelectorGrid"></div>
-        <p style="text-align: center; font-size: 16px;">የተመረጡ ካርቴላዎች: <span id="selectedCount">0</span>/3</p>
-        <button class="action-btn" id="lockCardsBtn" onclick="confirmAndLockCards()">ምርጫን አጽድቅ (Lock Stake)</button>
-    </div>
+    <!-- MAIN APP CONTAINER -->
+    <div class="container">
+        
+        <!-- SECTION: GAME -->
+        <div id="game-section" class="app-section active">
+            
+            <!-- SCREEN 1: Card Selection & 5x5 Matrix Preview -->
+            <div id="screen-1">
+                <h3 class="section-title">ከ 1 - 600 ካርቴላ ይምረጡ</h3>
+                <div id="cards-grid" class="cards-grid"></div>
 
-    <!-- Screen 2: Real-time Live Match Arena -->
-    <div id="screen-bingo-play" class="screen">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <h3>LIVE BINGO</h3>
-            <span style="color: var(--accent-color); font-weight: bold; font-size: 18px;">Game ID: #<span id="activeGameId">0001</span></span>
+                <!-- 5x5 Matrix Preview Container (Initially Hidden) -->
+                <div id="bingo-card-container" style="display: none;">
+                    <h4 class="card-title">የእርስዎ የ 5x5 ቢንጎ ካርቴላ</h4>
+                    <div id="bingo-card-grid" class="bingo-card-grid"></div>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: Live Game Mode (Triggered when countdown hits 0) -->
+            <div id="screen-2" style="display: none;">
+                <!-- Live Header Stats Requested in 1st clause -->
+                <div class="live-stats-header">
+                    <div class="live-stat">🪪 Game ID: <span id="game-id">0001</span></div>
+                    <div class="live-stat">🎟️ Bet: <span id="live-bet">0</span></div>
+                    <div class="live-stat">💰 Derash: <span id="live-derash">0</span></div>
+                    <div class="live-stat">💵 Stake: <span id="live-stake">10</span></div>
+                    <div class="live-stat">📢 Called: <span id="called-count">0</span></div>
+                </div>
+
+                <!-- Mini Screen for Bingo Caller -->
+                <div id="caller-screen" class="caller-screen">READY...</div>
+
+                <!-- BINGO Master Board Columns -->
+                <div class="bingo-board-columns">
+                    <div class="board-column"><div class="col-letter">B</div><div id="col-B" class="col-items"></div></div>
+                    <div class="board-column"><div class="col-letter">I</div><div id="col-I" class="col-items"></div></div>
+                    <div class="board-column"><div class="col-letter">N</div><div id="col-N" class="col-items"></div></div>
+                    <div class="board-column"><div class="col-letter">G</div><div id="col-G" class="col-items"></div></div>
+                    <div class="board-column"><div class="col-letter">O</div><div id="col-O" class="col-items"></div></div>
+                </div>
+            </div>
+
         </div>
-        <div class="bingo-caller-display" id="callerScreen">በመጠባበቅ ላይ...</div>
-        <div id="myBingoBoards"></div>
-    </div>
 
-    <!-- Screen 3: User Accounting Ledger Panel -->
-    <div id="screen-wallet" class="screen">
-        <h2>የእኔ ሂሳብ (Wallet)</h2>
-        <div class="card-view"><h3>Main Wallet</h3><p style="font-size: 24px; color:#2ecc71;" id="wMain">0.00 ETB</p></div>
-        <div class="card-view"><h3>Play Wallet</h3><p style="font-size: 24px; color:#0088cc;" id="wPlay">10.00 ETB</p></div>
-    </div>
-
-    <!-- Screen 4: Transaction & Match History Index -->
-    <div id="screen-history" class="screen">
-        <h2>የጨዋታ ታሪክ (History)</h2>
-        <div class="card-view">
-            <p>ጌም #0001 - የተገዛ ካርቴላ (-10 ETB)</p>
-            <small style="color: #aaa;">ያለፉ ጨዋታዎች ዝርዝር</small>
+        <!-- SECTION: WALLET -->
+        <div id="wallet-section" class="app-section" style="display: none;">
+            <h3 class="section-title">Wallet Balance</h3>
+            <div class="wallet-card">
+                <p>Main Wallet: <strong id="wallet-main">100 Birr</strong></p>
+                <p>Play Wallet: <strong id="wallet-play">10 Birr</strong></p>
+            </div>
         </div>
-    </div>
 
-    
-    <div id="screen-profile" class="screen">
-        <h2>የተጫዋች መገለጫ (Profile)</h2>
-        <div class="card-view">
-            <p><strong>Telegram ID:</strong> <span id="profTgId">Loading...</span></p>
-            <p><strong>Telephone:</strong> <span id="profPhone">+251928361886</span></p>
-            <p><strong>Main Wallet:</strong> <span id="profMain">0 ETB</span></p>
-            <p><strong>Play Wallet:</strong> <span id="profPlay">10 ETB</span></p>
+        <!-- SECTION: HISTORY -->
+        <div id="history-section" class="app-section" style="display: none;">
+            <h3 class="section-title">Game History</h3>
+            <p class="empty-msg">ምንም የተጫወቱት ታሪክ የለም።</p>
         </div>
+
+        <!-- SECTION: PROFILE -->
+        <div id="profile-section" class="app-section" style="display: none;">
+            <h3 class="section-title">User Profile</h3>
+            <div class="profile-card">
+                <p>🆔 Telegram ID: <strong>589234123</strong></p>
+                <p>📞 Telephone: <strong>+251911234567</strong></p>
+                <p>💳 Main Wallet: <strong>100 Birr</strong></p>
+                <p>🎮 Play Wallet: <strong>10 Birr</strong></p>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Fixed App Navigation Bar Structure -->
-    <div class="navbar">
-        <div class="nav-item active" onclick="switchTab(event, 'game')">Game</div>
-        <div class="nav-item" onclick="switchTab(event, 'wallet')">Wallet</div>
-        <div class="nav-item" onclick="switchTab(event, 'history')">History</div>
-        <div class="nav-item" onclick="switchTab(event, 'profile')">Profile</div>
-    </div>
+    <!-- BOTTOM NAVIGATION BAR -->
+    <nav class="nav-bar">
+        <button class="nav-btn active" data-section="game">🎮 Game</button>
+        <button class="nav-btn" data-section="wallet">👛 Wallet</button>
+        <button class="nav-btn" data-section="history">📜 History</button>
+        <button class="nav-btn" data-section="profile">👤 Profile</button>
+    </nav>
 
-    <!-- Core Runtime Execution Script Engine Attachment -->
-    <script src="app.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html>
