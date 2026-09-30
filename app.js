@@ -1,4 +1,4 @@
-// Global Application Runtime State Declarations
+// Operational State Configuration
 const API_BASE_URL = "http://localhost:8000/api"; 
 let tgId = "12345678"; 
 let selectedCards = [];
@@ -6,15 +6,23 @@ let countdownVal = 49;
 const stakePerCard = 10.0;
 let userBoardsData = {}; 
 
-// Lifecycle Listener Safeguarding Execution After DOM Parsing Completes
+// 💡 100% አስተማማኝ አነሳስ፡ ገጹ ሲከፈት መጀመሪያ 600ቱን ቁጥሮች እና ታይመሩን ያስነሳል
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM loaded. Initializing core game elements...");
+    
+    // 1. መጀመሪያ 600ቱን ቁጥሮች ማመንጨት (ሰርቨር ባይኖርም ወዲያውኑ እንዲታዩ)
     initCardSelector(); 
-    setupTelegram();
-    loadUserData();
+    
+    // 2. ሰዓት ቆጣሪውን ማስጀመር (ወዲያውኑ መቁጠር ይጀምራል)
     startCountdown();
+    
+    // 3. የቴሌግራም መረጃ መጫን
+    setupTelegram();
+    
+    // 4. ከሰርቨር ላይ ዋሌት መጫን (ካልተሳካ ጨዋታውን አያቆምም)
+    loadUserData();
 });
 
-// Sync Context Properties with Upstream Telegram Client Instance
 function setupTelegram() {
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.expand();
@@ -24,10 +32,13 @@ function setupTelegram() {
     }
 }
 
-// Generate the 1 to 600 Card Grid Dynamically
+// 1ኛ ህግ፡ ከ 1 - 600 ካርቴላዎችን ማመንጫ እና መራጭ
 function initCardSelector() {
     const grid = document.getElementById('cardSelectorGrid');
-    if(!grid) return;
+    if (!grid) {
+        console.error("Error: cardSelectorGrid element not found in HTML!");
+        return;
+    }
     grid.innerHTML = ""; 
     
     for (let i = 1; i <= 600; i++) {
@@ -50,9 +61,10 @@ function initCardSelector() {
         };
         grid.appendChild(card);
     }
+    console.log("Successfully generated 600 cards.");
 }
 
-// Fetch Remote Accounting Balance State Contexts
+// መረጃ ከባክኤንድ መጫኛ (💡 በ try/catch ተጠቅልሏል፣ ሰርቨር ባይኖር ጌሙን አያበላሽም)
 async function loadUserData() {
     try {
         let res = await fetch(${API_BASE_URL}/user/${tgId});
@@ -68,11 +80,11 @@ async function loadUserData() {
             document.getElementById('profPlay').innerText = data.play_wallet + " ETB";
         }
     } catch (err) { 
-        console.log("Local standalone fallback mode enabled."); 
+        console.log("Server not responding. Running in standalone local fallback mode."); 
     }
 }
 
-// Deduct Stake Values via API Gateway
+// ምርጫን አጽድቆ ስቴክ ማስያዣ
 async function confirmAndLockCards() {
     if (selectedCards.length === 0) return alert("እባክዎ መጀመሪያ ካርቴላ ይምረጡ!");
     try {
@@ -90,27 +102,32 @@ async function confirmAndLockCards() {
             alert(errData.detail);
         }
     } catch(e) { 
-        alert("ምርጫው በUI ደረጃ ተመዝግቧል!"); 
+        alert("የሰርቨር ግንኙነት የለም! ምርጫው በUI ደረጃ ብቻ ተመዝግቧል።"); 
+        document.getElementById('lockCardsBtn').disabled = true;
     }
 }
 
-// Execute Countdown Match Clocks
+// 3ኛ ህግ፡ ከ 49 ጀምሮ countdown timer ወደ ታች የሚቆጥር
 function startCountdown() {
-    let timerInterval = setInterval(() => {
+    const timerDisplay = document.getElementById('timer');
+    if (!timerDisplay) return;
+	let timerInterval = setInterval(() => {
         countdownVal--;
-        document.getElementById('timer').innerText = countdownVal;
+        timerDisplay.innerText = countdownVal;
         if (countdownVal <= 0) {
             clearInterval(timerInterval);
             startLiveBingoGame();
         }
     }, 1000);
 }
-// Initialize Active Match Space & Dynamic Matrix Rendering
+
+// 4ኛ እና 5ኛ ህግ፡ የቀጥታ ቢንጎ ጨዋታ ስክሪን እና ማትሪክስ ማመንጫ
 function startLiveBingoGame() {
     document.getElementById('screen-game').classList.remove('active');
     document.getElementById('screen-bingo-play').classList.add('active');
     
     const boardContainer = document.getElementById('myBingoBoards');
+    if (!boardContainer) return;
     boardContainer.innerHTML = "";
     userBoardsData = {};
     
@@ -130,11 +147,11 @@ function startLiveBingoGame() {
         };
 
         for(let r=0; r<5; r++) {
-            let b = Math.floor(Math.random()*15)+1;      // B: 1-15
-            let idxI = Math.floor(Math.random()*15)+16;  // I: 16-30
-            let n = (r===2) ? "FREE" : Math.floor(Math.random()*15)+31; // N: 31-45
-            let g = Math.floor(Math.random()*15)+46;  // G: 46-60
-            let o = Math.floor(Math.random()*15)+61;  // O: 61-75
+            let b = Math.floor(Math.random()*15)+1;   
+            let idxI = Math.floor(Math.random()*15)+16; 
+            let n = (r===2) ? "FREE" : Math.floor(Math.random()*15)+31; 
+            let g = Math.floor(Math.random()*15)+46; 
+            let o = Math.floor(Math.random()*15)+61; 
             
             userBoardsData[cNum].mapping[b] = { row: r, col: 0 };
             userBoardsData[cNum].mapping[idxI] = { row: r, col: 1 };
@@ -185,27 +202,30 @@ function startLiveBingoGame() {
     }, 2500);
 }
 
-// Algorithmic Evaluation Engine (Rows, Columns, and Diagonal Axis Checks)
 function checkBingoWinner(matrix) {
     for (let r = 0; r < 5; r++) if (matrix[r][0] && matrix[r][1] && matrix[r][2] && matrix[r][3] && matrix[r][4]) return true;
-    for (let c = 0; c < 5; c++) if (matrix[0][c] && matrix[1][c] && matrix[2][c] && matrix[3][c] && matrix[4][c]) return true;
+	for (let c = 0; c < 5; c++) if (matrix[0][c] && matrix[1][c] && matrix[2][c] && matrix[3][c] && matrix[4][c]) return true;
     if (matrix[0][0] && matrix[1][1] && matrix[2][2] && matrix[3][3] && matrix[4][4]) return true;
     if (matrix[0][4] && matrix[1][3] && matrix[2][2] && matrix[3][1] && matrix[4][0]) return true;
     return false;
 }
-// Navigation Tab Management Strategy Handler
+
+// 2ኛ ህግ፡ በአግባቡ የሚሰራ የኔቪጌሽን ባር መቀያየሪያ
 function switchTab(event, tab) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     
     if (event && event.currentTarget) {
         event.currentTarget.classList.add('active');
+    } else if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
     }
     
     if(tab === 'game') {
         if(countdownVal > 0) document.getElementById('screen-game').classList.add('active');
         else document.getElementById('screen-bingo-play').classList.add('active');
     } else {
-        document.getElementById('screen-' + tab).classList.add('active');
+        const targetScreen = document.getElementById('screen-' + tab);
+        if (targetScreen) targetScreen.classList.add('active');
     }
 }
